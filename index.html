@@ -2,43 +2,21 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>El Túnel de las Conversiones - 5º Primaria</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- Google Fonts: MedievalSharp & Outfit for Abandoned Dungeon/Tunnel theme -->
+  <!-- Canvas Confetti CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=MedievalSharp&family=Outfit:wght@600;800;900&display=swap" rel="stylesheet">
 
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            title: ['Cinzel', 'MedievalSharp', 'serif'],
-            sans: ['Outfit', 'sans-serif']
-          },
-          colors: {
-            tunnel: {
-              dark: '#0a0806',
-              stone: '#1c1714',
-              wall: '#2a221d',
-              moss: '#3a5311',
-              torch: '#ff8800',
-              gold: '#ffc83b',
-              iron: '#3f3f46'
-            }
-          }
-        }
-      }
-    }
-  </script>
-
   <style>
-    /* Strictly disable all scrollbars and enforce 100vh height */
+    /* Bloqueo estricto de desplazamiento para ajuste 100% responsive en todo tipo de pantallas */
     html, body {
       width: 100vw;
       height: 100vh;
@@ -54,7 +32,11 @@
       font-family: 'Outfit', sans-serif;
     }
 
-    /* Weathered Wood Plank Styles */
+    .font-title {
+      font-family: 'Cinzel', 'MedievalSharp', serif;
+    }
+
+    /* Paneles de madera y piedra envejecida */
     .wood-board {
       background: linear-gradient(180deg, #5c3d2e 0%, #3d261a 100%);
       border: 4px solid #23140c;
@@ -74,19 +56,19 @@
     .wood-board::before { top: 6px; left: 6px; }
     .wood-board::after { top: 6px; right: 6px; }
 
-    /* Ancient Stone Tablet Style */
     .stone-board {
       background: linear-gradient(180deg, #38322e 0%, #1e1a17 100%);
       border: 4px solid #0f0d0b;
       box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.15), 0 10px 25px rgba(0,0,0,0.9);
     }
 
-    /* Abandoned Wooden Door Styling */
+    /* Puertas abandonadas con diseño detallado */
     .abandoned-door {
       background: linear-gradient(180deg, #422a1d 0%, #24160e 100%);
       border: 5px solid #140b06;
       box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.9), 0 10px 20px rgba(0, 0, 0, 0.8);
       transition: all 0.2s ease-out;
+      position: relative;
     }
     .abandoned-door:hover {
       transform: translateY(-4px) scale(1.01);
@@ -97,21 +79,35 @@
       transform: translateY(2px) scale(0.99);
     }
 
-    /* Iron Bracket Decors */
+    /* Pomos y cerrojos tradicionales de las puertas */
+    .door-knob {
+      width: clamp(22px, 3.5vw, 32px);
+      height: clamp(22px, 3.5vw, 32px);
+      background: radial-gradient(circle at 35% 35%, #fbbf24 0%, #92400e 70%, #451a03 100%);
+      border-radius: 50%;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.8), inset -2px -2px 4px rgba(0,0,0,0.8);
+      border: 2px solid #78350f;
+    }
+    .door-keyhole {
+      width: 5px;
+      height: 8px;
+      background-color: #1c100b;
+      border-radius: 2px 2px 1px 1px;
+    }
+
     .iron-bracket {
       background: linear-gradient(90deg, #27272a, #52525b, #27272a);
       border-top: 1px solid #71717a;
       border-bottom: 1px solid #09090b;
     }
 
-    /* Stone Plaque Center Result (High Contrast) */
+    /* Placa de piedra central con número gigante */
     .stone-plaque-center {
       background: linear-gradient(180deg, #ffffff 0%, #e2e8f0 100%);
       border: 4px solid #1c1917;
       box-shadow: 0 8px 16px rgba(0, 0, 0, 0.8), inset 0 2px 4px rgba(255, 255, 255, 1);
     }
 
-    /* Torch Flicker Animation Effect */
     @keyframes torchFlicker {
       0%, 100% { opacity: 0.9; filter: drop-shadow(0 0 12px rgba(255, 136, 0, 0.8)); }
       50% { opacity: 0.7; filter: drop-shadow(0 0 6px rgba(255, 85, 0, 0.5)); }
@@ -121,39 +117,31 @@
       animation: torchFlicker 1.8s infinite ease-in-out;
     }
 
-    /* Text Glows */
     .title-glow {
       text-shadow: 2px 2px 0px #000, -2px -2px 0px #000, 2px -2px 0px #000, -2px 2px 0px #000, 0 0 15px rgba(255, 184, 77, 0.6);
     }
-    .text-pop-black {
-      text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
-    }
 
-    /* Scrollbars hidden for modals */
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: #1c1917; }
     ::-webkit-scrollbar-thumb { background: #b45309; border-radius: 4px; }
   </style>
 </head>
-<body class="h-screen w-screen overflow-hidden flex flex-col justify-between relative bg-tunnel-dark font-sans select-none">
+<body class="h-screen w-screen overflow-hidden flex flex-col justify-between relative bg-black font-sans select-none">
 
-  <!-- Background Canvas: Perspective Abandoned Stone Tunnel with Torch Particles -->
+  <!-- Canvas de fondo animado del túnel de piedra -->
   <canvas id="tunnelCanvas" class="fixed inset-0 w-full h-full z-0 pointer-events-none"></canvas>
 
-  <!-- Sparks & Confetti Canvas Overlay -->
-  <canvas id="sparksCanvas" class="fixed inset-0 w-full h-full z-40 pointer-events-none"></canvas>
-
-  <!-- Audio Toggle Floating Button -->
-  <button id="soundBtn" onclick="toggleSound()" class="fixed top-2 right-2 z-50 bg-stone-900/90 hover:bg-stone-800 text-amber-400 border-2 border-amber-800/80 p-2 rounded-xl shadow-lg transition flex items-center justify-center w-10 h-10 text-base" title="Sonido">
+  <!-- Botón de sonido flotante -->
+  <button id="soundBtn" onclick="window.toggleSound()" class="fixed top-2 right-2 z-50 bg-stone-900/90 hover:bg-stone-800 text-amber-400 border-2 border-amber-800/80 p-2 rounded-xl shadow-lg transition flex items-center justify-center w-10 h-10 text-base" title="Sonido">
     <i id="soundIcon" class="fas fa-volume-up"></i>
   </button>
 
-  <!-- MAIN GAME CONTAINER (STRICTLY FITS 100VH WITHOUT SCROLL) -->
+  <!-- CONTENEDOR PRINCIPAL (100% VIEWPORT SIN SCROLL) -->
   <div class="relative z-10 h-full w-full max-w-6xl mx-auto flex flex-col justify-between p-2 sm:p-3 min-h-0">
 
-    <!-- HEADER BAR: TITLE BOARD & STAIRS BUTTON -->
+    <!-- CABECERA PRINCIPAL -->
     <header class="flex-none flex items-center justify-between wood-board rounded-2xl px-3 py-1.5 sm:px-5 sm:py-2 my-0.5">
-      <div class="flex items-center gap-2 sm:gap-3 cursor-pointer" onclick="goHome()">
+      <div class="flex items-center gap-2 sm:gap-3 cursor-pointer" onclick="window.goHome()">
         <div class="text-amber-400 text-xl sm:text-3xl torch-glow">
           <i class="fas fa-dungeon"></i>
         </div>
@@ -164,70 +152,65 @@
         </div>
       </div>
 
-      <button onclick="openStairsModal()" class="bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-stone-950 font-black px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl border-2 border-amber-950 text-xs sm:text-sm flex items-center gap-1.5 shadow-md active:scale-95 transition">
+      <button onclick="window.openStairsModal()" class="bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-stone-950 font-black px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl border-2 border-amber-950 text-xs sm:text-sm flex items-center gap-1.5 shadow-md active:scale-95 transition">
         <i class="fas fa-stairs text-sm"></i>
         <span class="hidden sm:inline">Escalera Métrica</span>
       </button>
     </header>
 
-    <!-- SCREEN 1: HOME MODE SELECTOR -->
+    <!-- PANTALLA 1: MENÚ PRINCIPAL (SELECCIÓN DE MODOS DE 30 NIVELES) -->
     <main id="screenHome" class="flex-1 flex flex-col justify-center items-center my-auto min-h-0 py-2">
-      
       <div class="text-center max-w-xl mb-3 sm:mb-5">
         <span class="inline-block px-3 py-1 rounded-full bg-amber-950/80 border border-amber-600/60 text-amber-300 text-xs sm:text-sm font-bold mb-1">
-          🕯️ Adéntrate en el viejo túnel y cruza la puerta correcta
+          🕯️ Adéntrate en el viejo túnel y supera los 30 niveles
         </span>
         <h2 class="font-title text-2xl sm:text-4xl font-black text-stone-100 title-glow">
           SELECCIONA TU DESAFÍO
         </h2>
       </div>
 
-      <!-- Mode Cards Grid -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 w-full max-w-4xl">
-        
         <!-- Longitud -->
-        <button onclick="startGame('longitud')" class="abandoned-door p-3 sm:p-4 rounded-2xl text-center flex flex-col items-center justify-between group">
+        <button onclick="window.startGame('longitud')" class="abandoned-door p-3 sm:p-4 rounded-2xl text-center flex flex-col items-center justify-between group">
           <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-xl bg-sky-950/80 border-2 border-sky-500/50 text-sky-400 flex items-center justify-center text-2xl sm:text-3xl mb-2 shadow-inner group-hover:scale-110 transition">
             <i class="fas fa-ruler-combined"></i>
           </div>
           <h3 class="font-title text-lg sm:text-xl font-black text-amber-300 mb-0.5">LONGITUD</h3>
           <p class="text-[10px] sm:text-xs text-stone-300 font-bold mb-3 bg-stone-900/80 px-2 py-0.5 rounded-full border border-stone-700">km, hm, dam, m, dm, cm, mm</p>
-          <span class="w-full font-black text-xs bg-amber-500 text-stone-950 py-1.5 rounded-lg border border-amber-900 group-hover:bg-amber-400">ENTRAR AL TÚNEL</span>
+          <span class="w-full font-black text-xs bg-amber-500 text-stone-950 py-1.5 rounded-lg border border-amber-900 group-hover:bg-amber-400">30 NIVELES</span>
         </button>
 
         <!-- Capacidad -->
-        <button onclick="startGame('capacidad')" class="abandoned-door p-3 sm:p-4 rounded-2xl text-center flex flex-col items-center justify-between group">
+        <button onclick="window.startGame('capacidad')" class="abandoned-door p-3 sm:p-4 rounded-2xl text-center flex flex-col items-center justify-between group">
           <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-xl bg-fuchsia-950/80 border-2 border-fuchsia-500/50 text-fuchsia-400 flex items-center justify-center text-2xl sm:text-3xl mb-2 shadow-inner group-hover:scale-110 transition">
             <i class="fas fa-flask"></i>
           </div>
           <h3 class="font-title text-lg sm:text-xl font-black text-amber-300 mb-0.5">CAPACIDAD</h3>
           <p class="text-[10px] sm:text-xs text-stone-300 font-bold mb-3 bg-stone-900/80 px-2 py-0.5 rounded-full border border-stone-700">kl, hl, dal, l, dl, cl, ml</p>
-          <span class="w-full font-black text-xs bg-amber-500 text-stone-950 py-1.5 rounded-lg border border-amber-900 group-hover:bg-amber-400">ENTRAR AL TÚNEL</span>
+          <span class="w-full font-black text-xs bg-amber-500 text-stone-950 py-1.5 rounded-lg border border-amber-900 group-hover:bg-amber-400">30 NIVELES</span>
         </button>
 
         <!-- Masa -->
-        <button onclick="startGame('masa')" class="abandoned-door p-3 sm:p-4 rounded-2xl text-center flex flex-col items-center justify-between group">
+        <button onclick="window.startGame('masa')" class="abandoned-door p-3 sm:p-4 rounded-2xl text-center flex flex-col items-center justify-between group">
           <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-xl bg-emerald-950/80 border-2 border-emerald-500/50 text-emerald-400 flex items-center justify-center text-2xl sm:text-3xl mb-2 shadow-inner group-hover:scale-110 transition">
             <i class="fas fa-weight-hanging"></i>
           </div>
           <h3 class="font-title text-lg sm:text-xl font-black text-amber-300 mb-0.5">MASA</h3>
           <p class="text-[10px] sm:text-xs text-stone-300 font-bold mb-3 bg-stone-900/80 px-2 py-0.5 rounded-full border border-stone-700">kg, hg, dag, g, dg, cg, mg</p>
-          <span class="w-full font-black text-xs bg-amber-500 text-stone-950 py-1.5 rounded-lg border border-amber-900 group-hover:bg-amber-400">ENTRAR AL TÚNEL</span>
+          <span class="w-full font-black text-xs bg-amber-500 text-stone-950 py-1.5 rounded-lg border border-amber-900 group-hover:bg-amber-400">30 NIVELES</span>
         </button>
 
         <!-- Desafío Mixto -->
-        <button onclick="startGame('mixto')" class="abandoned-door p-3 sm:p-4 rounded-2xl text-center flex flex-col items-center justify-between group border-amber-500/80">
+        <button onclick="window.startGame('mixto')" class="abandoned-door p-3 sm:p-4 rounded-2xl text-center flex flex-col items-center justify-between group border-amber-500/80">
           <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-xl bg-amber-950/80 border-2 border-amber-400 text-amber-300 flex items-center justify-center text-2xl sm:text-3xl mb-2 shadow-inner group-hover:scale-110 transition">
             <i class="fas fa-skull"></i>
           </div>
           <h3 class="font-title text-lg sm:text-xl font-black text-amber-300 mb-0.5">DESAFÍO MIXTO</h3>
           <p class="text-[10px] sm:text-xs text-amber-200 font-bold mb-3 bg-stone-900/80 px-2 py-0.5 rounded-full border border-stone-700">¡Todas las medidas!</p>
-          <span class="w-full font-black text-xs bg-gradient-to-r from-amber-400 to-orange-500 text-stone-950 py-1.5 rounded-lg border border-amber-900 group-hover:brightness-110">⭐ RETO LEYENDA</span>
+          <span class="w-full font-black text-xs bg-gradient-to-r from-amber-400 to-orange-500 text-stone-950 py-1.5 rounded-lg border border-amber-900 group-hover:brightness-110">⭐ 30 NIVELES</span>
         </button>
-
       </div>
 
-      <!-- High Score Banner -->
       <div class="mt-4 sm:mt-6 bg-stone-900/90 border-2 border-stone-700 rounded-2xl px-5 py-2 flex items-center gap-3 shadow-lg">
         <i class="fas fa-trophy text-amber-400 text-xl"></i>
         <span class="text-stone-300 font-bold text-xs sm:text-sm">Récord Máximo Guardado:</span>
@@ -235,30 +218,23 @@
       </div>
     </main>
 
-    <!-- SCREEN 2: GAMEPLAY (STRICT FIT IN VIEWPORT) -->
+    <!-- PANTALLA 2: JUEGO ACTIVO -->
     <main id="screenGame" class="hidden flex-1 flex flex-col justify-between my-auto min-h-0 py-1 relative">
-      
-      <!-- HUD TOP BAR -->
+      <!-- BARRA DE ESTADO / HUD -->
       <div class="flex-none grid grid-cols-3 items-center stone-board px-3 py-1.5 rounded-xl text-xs sm:text-sm mb-1.5">
-        
-        <!-- Lives -->
-        <div class="flex items-center gap-1.5">
-          <span class="text-stone-400 font-bold hidden sm:inline">Vidas:</span>
-          <div id="livesContainer" class="flex items-center text-red-500 text-lg sm:text-xl gap-1">
-            <i class="fas fa-heart"></i>
-            <i class="fas fa-heart"></i>
-            <i class="fas fa-heart"></i>
-          </div>
+        <div class="flex items-center gap-2">
+          <span class="text-stone-400 font-bold hidden sm:inline">Nivel:</span>
+          <span id="levelBadge" class="bg-amber-950 text-amber-300 border border-amber-600/80 font-black px-2.5 py-0.5 rounded-lg text-xs">
+            1 / 30
+          </span>
         </div>
 
-        <!-- Category Badge -->
         <div class="text-center">
           <span id="gameCategoryBadge" class="bg-amber-950 text-amber-300 border border-amber-600/80 text-[10px] sm:text-xs px-3 py-0.5 rounded-full font-black uppercase tracking-wider shadow">
             LONGITUD
           </span>
         </div>
 
-        <!-- Score & Streak -->
         <div class="text-right flex items-center justify-end gap-3">
           <div class="hidden sm:block">
             <span class="text-[10px] text-stone-400 block font-bold">Racha</span>
@@ -271,14 +247,12 @@
         </div>
       </div>
 
-      <!-- CHALLENGE TABLET -->
+      <!-- TABLILLA DEL RETO -->
       <div class="flex-none stone-board p-2.5 sm:p-3.5 rounded-2xl text-center relative border-2 border-stone-700 mb-1.5">
-        
         <p class="text-[10px] sm:text-xs text-amber-400 uppercase tracking-widest font-black mb-1">
           📜 ENCUENTRA LA CONVERSIÓN CORRECTA
         </p>
 
-        <!-- Big Conversion Display -->
         <div class="flex items-center justify-center gap-2 sm:gap-4 my-1">
           <div class="bg-stone-900 border-2 border-stone-600 px-3 py-1 sm:px-5 sm:py-2 rounded-xl shadow-inner">
             <span id="sourceValue" class="text-xl sm:text-3xl font-black text-stone-100">3,5</span>
@@ -300,23 +274,19 @@
         </p>
       </div>
 
-      <!-- THE 3 DOORS (CENTRAL STONE PLAQUE WITH GIANT HIGHLIGHTED RESULT) -->
+      <!-- LAS 3 PUERTAS CON POMOS Y RESULTADO GIGANTE CENTRADO -->
       <div class="flex-1 min-h-0 grid grid-cols-3 gap-2 sm:gap-4 items-stretch my-1">
-        
-        <!-- DOOR 1 -->
-        <button id="door0" onclick="chooseDoor(0)" class="abandoned-door rounded-2xl p-2 sm:p-3 text-center flex flex-col justify-between relative overflow-hidden group">
-          <!-- Iron Top Strap -->
+        <!-- Puerta 1 -->
+        <button id="door0" onclick="window.chooseDoor(0)" class="abandoned-door rounded-2xl p-2 sm:p-3 text-center flex flex-col justify-between relative overflow-hidden group">
           <div class="iron-bracket w-full h-3 sm:h-4 rounded-t flex items-center justify-between px-2">
             <div class="w-1.5 h-1.5 rounded-full bg-stone-900"></div>
             <div class="w-1.5 h-1.5 rounded-full bg-stone-900"></div>
           </div>
 
-          <!-- Door Label Header -->
           <div class="bg-amber-950/90 text-amber-300 border border-amber-800/80 text-[10px] sm:text-xs font-black px-2 py-0.5 rounded-md self-center z-10 shadow">
             PUERTA I
           </div>
 
-          <!-- GIANT CENTER RESULT PLAQUE -->
           <div class="my-auto z-10 w-full px-1">
             <div class="stone-plaque-center rounded-xl p-2 sm:p-3 shadow-2xl group-hover:scale-105 transition transform">
               <span id="doorText0" class="text-xl sm:text-3xl md:text-4xl font-black text-stone-950 block leading-tight tracking-tight">
@@ -325,30 +295,25 @@
             </div>
           </div>
 
-          <!-- Iron Bottom Strap -->
-          <div class="iron-bracket w-full h-3 sm:h-4 rounded-b flex items-center justify-between px-2">
-            <div class="w-1.5 h-1.5 rounded-full bg-stone-900"></div>
-            <div class="w-1.5 h-1.5 rounded-full bg-stone-900"></div>
+          <div class="w-full flex justify-between items-center px-2 z-10">
+            <div class="iron-bracket h-3 w-8 rounded"></div>
+            <div class="door-knob flex items-center justify-center">
+              <div class="door-keyhole"></div>
+            </div>
           </div>
-
-          <!-- Moss overlay decor in corner -->
-          <div class="absolute bottom-0 right-0 w-8 h-8 bg-tunnel-moss/40 rounded-tl-full pointer-events-none"></div>
         </button>
 
-        <!-- DOOR 2 -->
-        <button id="door1" onclick="chooseDoor(1)" class="abandoned-door rounded-2xl p-2 sm:p-3 text-center flex flex-col justify-between relative overflow-hidden group">
-          <!-- Iron Top Strap -->
+        <!-- Puerta 2 -->
+        <button id="door1" onclick="window.chooseDoor(1)" class="abandoned-door rounded-2xl p-2 sm:p-3 text-center flex flex-col justify-between relative overflow-hidden group">
           <div class="iron-bracket w-full h-3 sm:h-4 rounded-t flex items-center justify-between px-2">
             <div class="w-1.5 h-1.5 rounded-full bg-stone-900"></div>
             <div class="w-1.5 h-1.5 rounded-full bg-stone-900"></div>
           </div>
 
-          <!-- Door Label Header -->
           <div class="bg-amber-950/90 text-amber-300 border border-amber-800/80 text-[10px] sm:text-xs font-black px-2 py-0.5 rounded-md self-center z-10 shadow">
             PUERTA II
           </div>
 
-          <!-- GIANT CENTER RESULT PLAQUE -->
           <div class="my-auto z-10 w-full px-1">
             <div class="stone-plaque-center rounded-xl p-2 sm:p-3 shadow-2xl group-hover:scale-105 transition transform">
               <span id="doorText1" class="text-xl sm:text-3xl md:text-4xl font-black text-stone-950 block leading-tight tracking-tight">
@@ -357,30 +322,25 @@
             </div>
           </div>
 
-          <!-- Iron Bottom Strap -->
-          <div class="iron-bracket w-full h-3 sm:h-4 rounded-b flex items-center justify-between px-2">
-            <div class="w-1.5 h-1.5 rounded-full bg-stone-900"></div>
-            <div class="w-1.5 h-1.5 rounded-full bg-stone-900"></div>
+          <div class="w-full flex justify-between items-center px-2 z-10">
+            <div class="iron-bracket h-3 w-8 rounded"></div>
+            <div class="door-knob flex items-center justify-center">
+              <div class="door-keyhole"></div>
+            </div>
           </div>
-
-          <!-- Moss overlay decor in corner -->
-          <div class="absolute bottom-0 left-0 w-8 h-8 bg-tunnel-moss/40 rounded-tr-full pointer-events-none"></div>
         </button>
 
-        <!-- DOOR 3 -->
-        <button id="door2" onclick="chooseDoor(2)" class="abandoned-door rounded-2xl p-2 sm:p-3 text-center flex flex-col justify-between relative overflow-hidden group">
-          <!-- Iron Top Strap -->
+        <!-- Puerta 3 -->
+        <button id="door2" onclick="window.chooseDoor(2)" class="abandoned-door rounded-2xl p-2 sm:p-3 text-center flex flex-col justify-between relative overflow-hidden group">
           <div class="iron-bracket w-full h-3 sm:h-4 rounded-t flex items-center justify-between px-2">
             <div class="w-1.5 h-1.5 rounded-full bg-stone-900"></div>
             <div class="w-1.5 h-1.5 rounded-full bg-stone-900"></div>
           </div>
 
-          <!-- Door Label Header -->
           <div class="bg-amber-950/90 text-amber-300 border border-amber-800/80 text-[10px] sm:text-xs font-black px-2 py-0.5 rounded-md self-center z-10 shadow">
             PUERTA III
           </div>
 
-          <!-- GIANT CENTER RESULT PLAQUE -->
           <div class="my-auto z-10 w-full px-1">
             <div class="stone-plaque-center rounded-xl p-2 sm:p-3 shadow-2xl group-hover:scale-105 transition transform">
               <span id="doorText2" class="text-xl sm:text-3xl md:text-4xl font-black text-stone-950 block leading-tight tracking-tight">
@@ -389,39 +349,34 @@
             </div>
           </div>
 
-          <!-- Iron Bottom Strap -->
-          <div class="iron-bracket w-full h-3 sm:h-4 rounded-b flex items-center justify-between px-2">
-            <div class="w-1.5 h-1.5 rounded-full bg-stone-900"></div>
-            <div class="w-1.5 h-1.5 rounded-full bg-stone-900"></div>
+          <div class="w-full flex justify-between items-center px-2 z-10">
+            <div class="iron-bracket h-3 w-8 rounded"></div>
+            <div class="door-knob flex items-center justify-center">
+              <div class="door-keyhole"></div>
+            </div>
           </div>
-
-          <!-- Moss overlay decor in corner -->
-          <div class="absolute bottom-0 right-0 w-8 h-8 bg-tunnel-moss/40 rounded-tl-full pointer-events-none"></div>
         </button>
-
       </div>
 
-      <!-- EXPLORER MASCOT & SPEECH TRACK -->
+      <!-- PERSONAJE EXPLORADOR EN PIE DE PANTALLA -->
       <div class="flex-none h-10 sm:h-12 flex items-center justify-center relative mt-1">
         <div id="mascot" class="bg-stone-900 border-2 border-amber-600 px-3 py-1 rounded-xl text-stone-200 text-xs sm:text-sm font-bold flex items-center gap-2 shadow-xl transition-all duration-500 transform">
           <span class="text-lg sm:text-2xl torch-glow">🤠🕯️</span>
-          <span id="mascotSpeech">Toca la puerta con el resultado correcto</span>
+          <span id="mascotSpeech">Toca el pomo de la puerta con el resultado correcto</span>
         </div>
       </div>
     </main>
 
-    <!-- SCREEN 3: GAME OVER / RESULT -->
+    <!-- PANTALLA 3: RESULTADOS TRAS EL NIVEL 30 -->
     <main id="screenGameOver" class="hidden flex-1 flex flex-col justify-center items-center my-auto min-h-0 py-4">
       <div class="stone-board border-4 border-amber-900 p-5 sm:p-7 rounded-3xl max-w-md w-full text-center shadow-2xl">
-        
         <div id="medalIcon" class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-amber-500 border-2 border-stone-900 text-stone-950 flex items-center justify-center text-3xl sm:text-4xl mx-auto mb-3 shadow-lg">
           🏆
         </div>
 
-        <h2 id="gameOverTitle" class="font-title text-2xl sm:text-3xl font-black text-amber-300 mb-1">¡FIN DE LA EXPEDICIÓN!</h2>
-        <p id="gameOverSubtitle" class="text-xs sm:text-sm text-stone-300 font-bold mb-4">¡Gran esfuerzo explorando el túnel!</p>
+        <h2 id="gameOverTitle" class="font-title text-2xl sm:text-3xl font-black text-amber-300 mb-1">¡TÚNEL SUPERADO!</h2>
+        <p id="gameOverSubtitle" class="text-xs sm:text-sm text-stone-300 font-bold mb-4">¡Has completado los 30 niveles!</p>
 
-        <!-- Stats Grid -->
         <div class="grid grid-cols-2 gap-2 mb-5 font-sans text-left">
           <div class="bg-stone-900/90 p-2.5 rounded-xl border border-stone-700">
             <span class="text-[10px] text-stone-400 font-bold block">Puntos Totales</span>
@@ -434,8 +389,8 @@
           </div>
 
           <div class="bg-stone-900/90 p-2.5 rounded-xl border border-stone-700">
-            <span class="text-[10px] text-stone-400 font-bold block">Aciertos</span>
-            <span id="finalAccuracy" class="text-lg sm:text-xl font-black text-emerald-400">0 / 0</span>
+            <span class="text-[10px] text-stone-400 font-bold block">Precisión</span>
+            <span id="finalAccuracy" class="text-lg sm:text-xl font-black text-emerald-400">100%</span>
           </div>
 
           <div class="bg-stone-900/90 p-2.5 rounded-xl border border-stone-700">
@@ -444,25 +399,23 @@
           </div>
         </div>
 
-        <!-- Action Buttons -->
         <div class="flex gap-2">
-          <button onclick="restartCurrentGame()" class="flex-1 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-stone-950 font-black py-2.5 px-3 rounded-xl border border-amber-900 text-xs sm:text-sm shadow-md transition">
-            <i class="fas fa-redo"></i> Volver a Intentar
+          <button onclick="window.restartCurrentGame()" class="flex-1 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-stone-950 font-black py-2.5 px-3 rounded-xl border border-amber-900 text-xs sm:text-sm shadow-md transition">
+            <i class="fas fa-redo"></i> Volver a Jugar
           </button>
-          <button onclick="goHome()" class="flex-1 bg-stone-800 hover:bg-stone-700 text-stone-200 font-black py-2.5 px-3 rounded-xl border border-stone-600 text-xs sm:text-sm transition">
+          <button onclick="window.goHome()" class="flex-1 bg-stone-800 hover:bg-stone-700 text-stone-200 font-black py-2.5 px-3 rounded-xl border border-stone-600 text-xs sm:text-sm transition">
             <i class="fas fa-home"></i> Menú
           </button>
         </div>
-
       </div>
     </main>
 
   </div>
 
-  <!-- MODAL: ESCALERA MÉTRICA ABANDONADA -->
+  <!-- MODAL: ESCALERA MÉTRICA -->
   <div id="stairsModal" class="fixed inset-0 z-50 bg-stone-950/90 backdrop-blur-sm flex items-center justify-center p-3 hidden">
     <div class="stone-board border-4 border-amber-900 rounded-3xl max-w-lg w-full p-4 sm:p-5 shadow-2xl max-h-[95vh] flex flex-col justify-between relative">
-      <button onclick="closeStairsModal()" class="absolute top-3 right-3 text-stone-900 bg-amber-400 hover:bg-amber-300 font-black text-xl w-8 h-8 rounded-xl border border-stone-900 flex items-center justify-center">
+      <button onclick="window.closeStairsModal()" class="absolute top-3 right-3 text-stone-900 bg-amber-400 hover:bg-amber-300 font-black text-xl w-8 h-8 rounded-xl border border-stone-900 flex items-center justify-center">
         &times;
       </button>
 
@@ -475,7 +428,6 @@
         </p>
       </div>
 
-      <!-- Stair Visual Representation -->
       <div class="space-y-1.5 font-sans my-2 text-xs">
         <div class="flex items-center justify-between bg-purple-950/90 border border-purple-600/60 p-2 rounded-xl text-purple-200 font-bold">
           <span>km / kl / kg</span>
@@ -515,17 +467,16 @@
       </div>
 
       <div class="mt-2 text-center">
-        <button onclick="closeStairsModal()" class="bg-amber-500 hover:bg-amber-400 text-stone-950 font-black px-6 py-2 rounded-xl border border-stone-900 text-xs shadow-md">
+        <button onclick="window.closeStairsModal()" class="bg-amber-500 hover:bg-amber-400 text-stone-950 font-black px-6 py-2 rounded-xl border border-stone-900 text-xs shadow-md">
           ¡ENTENDIDO!
         </button>
       </div>
     </div>
   </div>
 
-  <!-- MODAL: FEEDBACK EXPLANATION ON ERROR -->
+  <!-- MODAL: EXPLICACIÓN PASO A PASO TRAS UN FALLO -->
   <div id="explanationModal" class="fixed inset-0 z-50 bg-stone-950/90 backdrop-blur-sm flex items-center justify-center p-3 hidden">
     <div class="stone-board border-4 border-amber-900 rounded-3xl max-w-md w-full p-4 sm:p-5 shadow-2xl text-center relative">
-      
       <div class="w-12 h-12 rounded-xl bg-red-900/80 border border-red-500 text-red-200 flex items-center justify-center text-2xl mx-auto mb-2 shadow-inner">
         <i class="fas fa-exclamation-triangle"></i>
       </div>
@@ -533,582 +484,474 @@
       <h3 class="font-title text-xl font-black text-amber-300 mb-1">Paso a Paso de la Conversión</h3>
 
       <div id="expBody" class="bg-stone-900 border border-stone-700 p-3 rounded-xl text-xs font-sans text-stone-200 text-left my-3 space-y-1.5">
-        <!-- Dynamic Explanation injected via JS -->
       </div>
 
-      <button onclick="closeExplanationModal()" class="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-stone-950 font-black px-6 py-2.5 rounded-xl border border-amber-900 w-full text-xs sm:text-sm shadow-md">
+      <button onclick="window.closeExplanationModal()" class="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-stone-950 font-black px-6 py-2.5 rounded-xl border border-amber-900 w-full text-xs sm:text-sm shadow-md">
         Continuar Expedición <i class="fas fa-arrow-right ml-1"></i>
       </button>
-
     </div>
   </div>
 
-  <!-- GAME ENGINE SCRIPT -->
+  <!-- MOTOR DE JUEGO RESILIENTE (JAVASCRIPT) -->
   <script>
-    /* ==========================================================================
-       1. DATA STRUCTURES (METRIC UNITS)
-       ========================================================================== */
-    const UNIT_CATEGORIES = {
-      longitud: {
-        name: 'LONGITUD',
-        badgeColor: 'bg-sky-950 text-sky-300 border-sky-600',
-        units: [
-          { code: 'km', val: 1000 },
-          { code: 'hm', val: 100 },
-          { code: 'dam', val: 10 },
-          { code: 'm', val: 1 },
-          { code: 'dm', val: 0.1 },
-          { code: 'cm', val: 0.01 },
-          { code: 'mm', val: 0.001 }
-        ]
-      },
-      capacidad: {
-        name: 'CAPACIDAD',
-        badgeColor: 'bg-fuchsia-950 text-fuchsia-300 border-fuchsia-600',
-        units: [
-          { code: 'kl', val: 1000 },
-          { code: 'hl', val: 100 },
-          { code: 'dal', val: 10 },
-          { code: 'l', val: 1 },
-          { code: 'dl', val: 0.1 },
-          { code: 'cl', val: 0.01 },
-          { code: 'ml', val: 0.001 }
-        ]
-      },
-      masa: {
-        name: 'MASA',
-        badgeColor: 'bg-emerald-950 text-emerald-300 border-emerald-600',
-        units: [
-          { code: 'kg', val: 1000 },
-          { code: 'hg', val: 100 },
-          { code: 'dag', val: 10 },
-          { code: 'g', val: 1 },
-          { code: 'dg', val: 0.1 },
-          { code: 'cg', val: 0.01 },
-          { code: 'mg', val: 0.001 }
-        ]
-      }
-    };
-
-    /* Game State Variables */
-    let currentMode = 'longitud';
-    let score = 0;
-    let lives = 3;
-    let streak = 0;
-    let maxStreak = 0;
-    let totalQuestions = 0;
-    let correctQuestions = 0;
-    let currentQuestion = null;
-    let isDoorLocked = false;
-    let soundEnabled = true;
-
-    /* ==========================================================================
-       2. WEB AUDIO SYNTHESIZER (AMBENDED TUNEL SOUNDS)
-       ========================================================================== */
-    let audioCtx = null;
-
-    function initAudio() {
-      if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      }
-      if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
-      }
-    }
-
-    function toggleSound() {
-      soundEnabled = !soundEnabled;
-      const icon = document.getElementById('soundIcon');
-      if (soundEnabled) {
-        icon.className = 'fas fa-volume-up';
-        playSound('click');
-      } else {
-        icon.className = 'fas fa-volume-mute text-stone-600';
-      }
-    }
-
-    function playSound(type) {
-      if (!soundEnabled) return;
-      initAudio();
-      if (!audioCtx) return;
-
-      const now = audioCtx.currentTime;
-
-      if (type === 'correct') {
-        // Triumphant echoes
-        const freqs = [440, 554.37, 659.25, 880];
-        freqs.forEach((f, i) => {
-          const osc = audioCtx.createOscillator();
-          const gain = audioCtx.createGain();
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(f, now + i * 0.06);
-          gain.gain.setValueAtTime(0.2, now + i * 0.06);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.06 + 0.3);
-          osc.connect(gain);
-          gain.connect(audioCtx.destination);
-          osc.start(now + i * 0.06);
-          osc.stop(now + i * 0.06 + 0.3);
-        });
-      } else if (type === 'wrong') {
-        // Deep stone creak rumble
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(140, now);
-        osc.frequency.linearRampToValueAtTime(80, now + 0.3);
-        gain.gain.setValueAtTime(0.3, now);
-        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start(now);
-        osc.stop(now + 0.3);
-      } else if (type === 'click') {
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(320, now);
-        gain.gain.setValueAtTime(0.1, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start(now);
-        osc.stop(now + 0.06);
-      }
-    }
-
-    /* ==========================================================================
-       3. QUESTION GENERATOR
-       ========================================================================== */
-    function formatNumberSpanish(num) {
-      if (Number.isInteger(num)) {
-        return num.toLocaleString('es-ES');
-      }
-      const cleanNum = parseFloat(num.toFixed(4));
-      return cleanNum.toString().replace('.', ',');
-    }
-
-    function generateQuestion(modeKey) {
-      let catKey = modeKey;
-      if (modeKey === 'mixto') {
-        const keys = ['longitud', 'capacidad', 'masa'];
-        catKey = keys[Math.floor(Math.random() * keys.length)];
-      }
-
-      const catData = UNIT_CATEGORIES[catKey];
-      const units = catData.units;
-
-      const idxSource = Math.floor(Math.random() * units.length);
-      let idxTarget = Math.floor(Math.random() * units.length);
-      while (idxTarget === idxSource) {
-        idxTarget = Math.floor(Math.random() * units.length);
-      }
-
-      const sourceUnit = units[idxSource];
-      const targetUnit = units[idxTarget];
-      const steps = idxTarget - idxSource; // >0 is down, <0 is up
-
-      let baseVal;
-      if (steps > 0) {
-        baseVal = Math.random() > 0.5 ? (Math.floor(Math.random() * 60) + 1) : (Math.floor(Math.random() * 80) + 10) / 10;
-      } else {
-        const factor = Math.pow(10, Math.abs(steps));
-        const mult = Math.floor(Math.random() * 30) + 1;
-        baseVal = mult * (factor / (Math.random() > 0.5 ? 1 : 10));
-        if (baseVal === 0) baseVal = 10;
-      }
-
-      const conversionFactor = Math.pow(10, Math.abs(steps));
-      let exactValue = steps > 0 ? (baseVal * conversionFactor) : (baseVal / conversionFactor);
-      exactValue = parseFloat(exactValue.toFixed(4));
-
-      // Distractors with typical 5th grade misconceptions
-      const distractors = new Set();
-
-      // Error 1: Wrong direction
-      let errOpposite = steps > 0 ? (baseVal / conversionFactor) : (baseVal * conversionFactor);
-      errOpposite = parseFloat(errOpposite.toFixed(4));
-      if (errOpposite !== exactValue && errOpposite > 0) distractors.add(errOpposite);
-
-      // Error 2: Missing or extra zero
-      const errFactor = Math.pow(10, Math.max(1, Math.abs(steps) - 1));
-      let errStep = steps > 0 ? (baseVal * errFactor) : (baseVal / errFactor);
-      errStep = parseFloat(errStep.toFixed(4));
-      if (errStep !== exactValue && errStep > 0) distractors.add(errStep);
-
-      // Error 3: Scale error
-      let errZero = exactValue * 10;
-      if (errZero !== exactValue) distractors.add(parseFloat(errZero.toFixed(4)));
-
-      while (distractors.size < 2) {
-        let fake = exactValue * (Math.random() > 0.5 ? 2 : 0.5);
-        fake = parseFloat(fake.toFixed(4));
-        if (fake !== exactValue && fake > 0) distractors.add(fake);
-      }
-
-      const distArr = Array.from(distractors).slice(0, 2);
-
-      const options = [
-        { val: exactValue, isCorrect: true },
-        { val: distArr[0], isCorrect: false },
-        { val: distArr[1], isCorrect: false }
-      ];
-
-      // Shuffle options
-      for (let i = options.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [options[i], options[j]] = [options[j], options[i]];
-      }
-
-      return {
-        categoryName: catData.name,
-        badgeColor: catData.badgeColor,
-        sourceValue: baseVal,
-        sourceUnit: sourceUnit,
-        targetUnit: targetUnit,
-        steps: steps,
-        exactValue: exactValue,
-        conversionFactor: conversionFactor,
-        options: options
+    (function() {
+      const UNIT_CATEGORIES = {
+        longitud: {
+          name: 'LONGITUD',
+          units: [
+            { code: 'km', val: 1000 },
+            { code: 'hm', val: 100 },
+            { code: 'dam', val: 10 },
+            { code: 'm', val: 1 },
+            { code: 'dm', val: 0.1 },
+            { code: 'cm', val: 0.01 },
+            { code: 'mm', val: 0.001 }
+          ]
+        },
+        capacidad: {
+          name: 'CAPACIDAD',
+          units: [
+            { code: 'kl', val: 1000 },
+            { code: 'hl', val: 100 },
+            { code: 'dal', val: 10 },
+            { code: 'l', val: 1 },
+            { code: 'dl', val: 0.1 },
+            { code: 'cl', val: 0.01 },
+            { code: 'ml', val: 0.001 }
+          ]
+        },
+        masa: {
+          name: 'MASA',
+          units: [
+            { code: 'kg', val: 1000 },
+            { code: 'hg', val: 100 },
+            { code: 'dag', val: 10 },
+            { code: 'g', val: 1 },
+            { code: 'dg', val: 0.1 },
+            { code: 'cg', val: 0.01 },
+            { code: 'mg', val: 0.001 }
+          ]
+        }
       };
-    }
 
-    /* ==========================================================================
-       4. GAMEPLAY UI CONTROLLER
-       ========================================================================== */
-    function updateHighScoreDisplay() {
-      const stored = localStorage.getItem('tunel_abandonado_score') || '0';
-      document.getElementById('globalHighScore').textContent = `${stored} pts`;
-    }
+      const TOTAL_LEVELS = 30;
+      let currentMode = 'longitud';
+      let currentLevel = 1;
+      let score = 0;
+      let streak = 0;
+      let maxStreak = 0;
+      let totalAttempts = 0;
+      let correctAttempts = 0;
+      let currentQuestion = null;
+      let soundEnabled = true;
 
-    function startGame(mode) {
-      playSound('click');
-      currentMode = mode;
-      score = 0;
-      lives = 3;
-      streak = 0;
-      maxStreak = 0;
-      totalQuestions = 0;
-      correctQuestions = 0;
-      isDoorLocked = false;
+      let audioCtx = null;
 
-      document.getElementById('screenHome').classList.add('hidden');
-      document.getElementById('screenGameOver').classList.add('hidden');
-      document.getElementById('screenGame').classList.remove('hidden');
+      function initAudio() {
+        try {
+          if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          }
+          if (audioCtx && audioCtx.state === 'suspended') {
+            audioCtx.resume();
+          }
+        } catch(e) {}
+      }
 
-      updateHUD();
-      nextQuestion();
-    }
-
-    function goHome() {
-      playSound('click');
-      document.getElementById('screenGame').classList.add('hidden');
-      document.getElementById('screenGameOver').classList.add('hidden');
-      document.getElementById('screenHome').classList.remove('hidden');
-      updateHighScoreDisplay();
-    }
-
-    function restartCurrentGame() {
-      startGame(currentMode);
-    }
-
-    function updateHUD() {
-      document.getElementById('scoreCounter').textContent = score;
-      document.getElementById('streakCounter').textContent = `🔥 x${streak}`;
-
-      const livesContainer = document.getElementById('livesContainer');
-      let heartsHTML = '';
-      for (let i = 0; i < 3; i++) {
-        if (i < lives) {
-          heartsHTML += '<i class="fas fa-heart text-red-500"></i>';
-        } else {
-          heartsHTML += '<i class="far fa-heart text-stone-700"></i>';
+      window.toggleSound = function() {
+        soundEnabled = !soundEnabled;
+        const icon = document.getElementById('soundIcon');
+        if (icon) {
+          icon.className = soundEnabled ? 'fas fa-volume-up' : 'fas fa-volume-mute text-stone-600';
         }
+        if (soundEnabled) playSound('correct');
+      };
+
+      function playSound(type) {
+        if (!soundEnabled) return;
+        initAudio();
+        if (!audioCtx) return;
+
+        try {
+          const now = audioCtx.currentTime;
+          if (type === 'correct') {
+            [440, 554.37, 659.25, 880].forEach((f, i) => {
+              const osc = audioCtx.createOscillator();
+              const gain = audioCtx.createGain();
+              osc.type = 'sine';
+              osc.frequency.setValueAtTime(f, now + i * 0.06);
+              gain.gain.setValueAtTime(0.15, now + i * 0.06);
+              gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.06 + 0.25);
+              osc.connect(gain);
+              gain.connect(audioCtx.destination);
+              osc.start(now + i * 0.06);
+              osc.stop(now + i * 0.06 + 0.25);
+            });
+          } else if (type === 'wrong') {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(180, now);
+            osc.frequency.exponentialRampToValueAtTime(90, now + 0.25);
+            gain.gain.setValueAtTime(0.2, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(now);
+            osc.stop(now + 0.25);
+          } else if (type === 'door') {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(220, now);
+            osc.frequency.exponentialRampToValueAtTime(110, now + 0.15);
+            gain.gain.setValueAtTime(0.15, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(now);
+            osc.stop(now + 0.15);
+          }
+        } catch(e) {}
       }
-      livesContainer.innerHTML = heartsHTML;
-    }
 
-    function nextQuestion() {
-      isDoorLocked = false;
-      currentQuestion = generateQuestion(currentMode);
+      // Animación de fondo en Canvas
+      const canvas = document.getElementById('tunnelCanvas');
+      if (canvas) {
+        const ctx = canvas.getContext('2d');
+        let particles = [];
 
-      const catBadge = document.getElementById('gameCategoryBadge');
-      catBadge.textContent = currentQuestion.categoryName;
-      catBadge.className = `text-[10px] sm:text-xs px-3 py-0.5 rounded-full font-black uppercase tracking-wider shadow border ${currentQuestion.badgeColor}`;
+        function resizeCanvas() {
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
 
-      document.getElementById('sourceValue').textContent = formatNumberSpanish(currentQuestion.sourceValue);
-      document.getElementById('sourceUnit').textContent = currentQuestion.sourceUnit.code;
-      document.getElementById('targetUnit').textContent = currentQuestion.targetUnit.code;
+        for (let i = 0; i < 35; i++) {
+          particles.push({
+            x: Math.random() * window.innerWidth,
+            y: Math.random() * window.innerHeight,
+            size: Math.random() * 2 + 1,
+            speedY: -Math.random() * 0.4 - 0.2,
+            opacity: Math.random() * 0.6 + 0.2
+          });
+        }
 
-      document.getElementById('challengePrompt').innerHTML = 
-        `Convierte <strong class="text-amber-300">${formatNumberSpanish(currentQuestion.sourceValue)} ${currentQuestion.sourceUnit.code}</strong> a <strong class="text-sky-300">${currentQuestion.targetUnit.code}</strong>`;
+        function renderTunnel() {
+          const w = canvas.width;
+          const h = canvas.height;
 
-      // Set door values directly in CENTER PLAQUE
-      for (let i = 0; i < 3; i++) {
-        const doorText = document.getElementById(`doorText${i}`);
-        const opt = currentQuestion.options[i];
-        doorText.textContent = `${formatNumberSpanish(opt.val)} ${currentQuestion.targetUnit.code}`;
+          ctx.fillStyle = '#070504';
+          ctx.fillRect(0, 0, w, h);
+
+          const cx = w / 2;
+          const cy = h / 2 - 20;
+
+          ctx.strokeStyle = '#1f1915';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(0, 0); ctx.lineTo(cx - 150, cy - 80);
+          ctx.moveTo(w, 0); ctx.lineTo(cx + 150, cy - 80);
+          ctx.moveTo(0, h); ctx.lineTo(cx - 150, cy + 120);
+          ctx.moveTo(w, h); ctx.lineTo(cx + 150, cy + 120);
+          ctx.stroke();
+
+          ctx.fillStyle = '#ffb84d';
+          particles.forEach(p => {
+            ctx.globalAlpha = p.opacity;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fill();
+
+            p.y += p.speedY;
+            if (p.y < 0) {
+              p.y = h;
+              p.x = Math.random() * w;
+            }
+          });
+          ctx.globalAlpha = 1.0;
+
+          requestAnimationFrame(renderTunnel);
+        }
+        renderTunnel();
       }
 
-      // Reset mascot speech and position
-      const mascot = document.getElementById('mascot');
-      mascot.style.transform = 'translateX(0)';
-      document.getElementById('mascotSpeech').textContent = 'Toca la puerta con el resultado correcto';
-    }
+      function updateGlobalHighScoreDisplay() {
+        let saved = 0;
+        try {
+          saved = localStorage.getItem('tunel_highscore') || 0;
+        } catch(e) {}
+        const el = document.getElementById('globalHighScore');
+        if (el) el.innerText = `${saved} pts`;
+      }
+      updateGlobalHighScoreDisplay();
 
-    function chooseDoor(doorIndex) {
-      if (isDoorLocked) return;
-      isDoorLocked = true;
-
-      const selectedOpt = currentQuestion.options[doorIndex];
-      totalQuestions++;
-
-      // Animate mascot towards chosen door
-      const mascot = document.getElementById('mascot');
-      const offset = (doorIndex - 1) * 120;
-      mascot.style.transform = `translateX(${offset}px)`;
-
-      if (selectedOpt.isCorrect) {
-        playSound('correct');
-        correctQuestions++;
-        streak++;
-        if (streak > maxStreak) maxStreak = streak;
-
-        score += 100 + (streak * 20);
-        document.getElementById('mascotSpeech').textContent = '¡CORRECTO! El portón se abre... 🗝️';
-
-        triggerSparks();
-
-        setTimeout(() => {
-          updateHUD();
-          nextQuestion();
-        }, 1000);
-
-      } else {
-        playSound('wrong');
-        lives--;
+      window.startGame = function(mode) {
+        initAudio();
+        playSound('door');
+        currentMode = mode;
+        currentLevel = 1;
+        score = 0;
         streak = 0;
-        updateHUD();
+        maxStreak = 0;
+        totalAttempts = 0;
+        correctAttempts = 0;
 
-        document.getElementById('mascotSpeech').textContent = '¡Esa puerta está trancada! ❌';
+        const home = document.getElementById('screenHome');
+        const over = document.getElementById('screenGameOver');
+        const game = document.getElementById('screenGame');
 
-        setTimeout(() => {
-          showExplanationModal();
-        }, 600);
-      }
-    }
+        if (home) home.classList.add('hidden');
+        if (over) over.classList.add('hidden');
+        if (game) game.classList.remove('hidden');
 
-    /* ==========================================================================
-       5. MODALS & EXPLANATIONS
-       ========================================================================== */
-    function showExplanationModal() {
-      const q = currentQuestion;
-      const isGoingDown = q.steps > 0;
-      const stepCount = Math.abs(q.steps);
-      const action = isGoingDown ? 'Bajamos' : 'Subimos';
-      const opName = isGoingDown ? 'multiplicamos' : 'dividimos';
-      const opSym = isGoingDown ? '×' : ':';
+        loadLevel();
+      };
 
-      let expHTML = `
-        <p>• Queremos pasar de <strong>${formatNumberSpanish(q.sourceValue)} ${q.sourceUnit.code}</strong> a <strong>${q.targetUnit.code}</strong>.</p>
-        <p>• En la escalera métrica: <strong>${action} ${stepCount} ${stepCount === 1 ? 'escalón' : 'escalones'}</strong>.</p>
-        <p>• Por tanto, <strong>${opName} por ${formatNumberSpanish(q.conversionFactor)}</strong> (${stepCount} ${stepCount === 1 ? 'cero' : 'ceros'}).</p>
-        <div class="bg-amber-500 text-stone-950 font-black p-2 rounded-lg text-center text-sm mt-2 border border-stone-900">
-          ${formatNumberSpanish(q.sourceValue)} ${opSym} ${formatNumberSpanish(q.conversionFactor)} = ${formatNumberSpanish(q.exactValue)} ${q.targetUnit.code}
-        </div>
-      `;
+      window.goHome = function() {
+        playSound('door');
+        const home = document.getElementById('screenHome');
+        const over = document.getElementById('screenGameOver');
+        const game = document.getElementById('screenGame');
 
-      document.getElementById('expBody').innerHTML = expHTML;
-      document.getElementById('explanationModal').classList.remove('hidden');
-    }
+        if (game) game.classList.add('hidden');
+        if (over) over.classList.add('hidden');
+        if (home) home.classList.remove('hidden');
+        updateGlobalHighScoreDisplay();
+      };
 
-    function closeExplanationModal() {
-      playSound('click');
-      document.getElementById('explanationModal').classList.add('hidden');
-
-      if (lives <= 0) {
-        endGame();
-      } else {
-        nextQuestion();
-      }
-    }
-
-    function openStairsModal() {
-      playSound('click');
-      document.getElementById('stairsModal').classList.remove('hidden');
-    }
-
-    function closeStairsModal() {
-      playSound('click');
-      document.getElementById('stairsModal').classList.add('hidden');
-    }
-
-    function endGame() {
-      document.getElementById('screenGame').classList.add('hidden');
-      document.getElementById('screenGameOver').classList.remove('hidden');
-
-      document.getElementById('finalScore').textContent = score;
-      document.getElementById('finalStreak').textContent = `x${maxStreak}`;
-
-      const accuracy = totalQuestions > 0 ? Math.round((correctQuestions / totalQuestions) * 100) : 0;
-      document.getElementById('finalAccuracy').textContent = `${correctQuestions}/${totalQuestions} (${accuracy}%)`;
-
-      const finalMedal = document.getElementById('finalMedal');
-      if (score >= 1000) {
-        finalMedal.textContent = '🥇 Maestro del Túnel';
-      } else if (score >= 500) {
-        finalMedal.textContent = '🥈 Explorador Veterano';
-      } else {
-        finalMedal.textContent = '🥉 Aprendiz de la Mina';
-      }
-
-      const currentHigh = parseInt(localStorage.getItem('tunel_abandonado_score') || '0', 10);
-      if (score > currentHigh) {
-        localStorage.setItem('tunel_abandonado_score', score.toString());
-      }
-    }
-
-    /* Keyboard Navigation */
-    window.addEventListener('keydown', (e) => {
-      const screenGame = document.getElementById('screenGame');
-      if (screenGame.classList.contains('hidden') || isDoorLocked) return;
-
-      if (e.key === '1' || e.key === 'ArrowLeft') chooseDoor(0);
-      if (e.key === '2' || e.key === 'ArrowUp') chooseDoor(1);
-      if (e.key === '3' || e.key === 'ArrowRight') chooseDoor(2);
-    });
-
-    /* ==========================================================================
-       6. CANVASES: ABANDONED TUNNEL ATMOSPHERE & SPARKS
-       ========================================================================== */
-    const canvas = document.getElementById('tunnelCanvas');
-    const ctx = canvas.getContext('2d');
-    const sparksCanvas = document.getElementById('sparksCanvas');
-    const sCtx = sparksCanvas.getContext('2d');
-
-    let width = 0, height = 0;
-    let particles = [];
-    let sparkList = [];
-
-    function resize() {
-      width = canvas.width = sparksCanvas.width = window.innerWidth;
-      height = canvas.height = sparksCanvas.height = window.innerHeight;
-      initParticles();
-    }
-
-    function initParticles() {
-      particles = [];
-      for (let i = 0; i < 40; i++) {
-        particles.push({
-          x: Math.random() * width,
-          y: Math.random() * height,
-          radius: Math.random() * 2 + 0.5,
-          vx: (Math.random() - 0.5) * 0.4,
-          vy: -Math.random() * 0.5 - 0.1,
-          alpha: Math.random() * 0.6 + 0.2
-        });
-      }
-    }
-
-    window.addEventListener('resize', resize);
-    resize();
-
-    // Render Perspective Tunnel & Floating Torch Spores
-    function renderTunnelBackground() {
-      ctx.fillStyle = '#0a0806';
-      ctx.fillRect(0, 0, width, height);
-
-      const cx = width / 2;
-      const cy = height / 2;
-
-      // Draw perspective stone arches
-      for (let i = 5; i >= 1; i--) {
-        const w = (i / 5) * width * 0.9;
-        const h = (i / 5) * height * 0.9;
-        const x = cx - w / 2;
-        const y = cy - h / 2;
-
-        ctx.strokeStyle = i % 2 === 0 ? '#1f1814' : '#140f0c';
-        ctx.lineWidth = 8;
-        ctx.strokeRect(x, y, w, h);
-      }
-
-      // Warm torch glows on side walls
-      const leftGlow = ctx.createRadialGradient(0, cy, 10, 0, cy, width * 0.4);
-      leftGlow.addColorStop(0, 'rgba(255, 136, 0, 0.25)');
-      leftGlow.addColorStop(1, 'rgba(0,0,0,0)');
-      ctx.fillStyle = leftGlow;
-      ctx.fillRect(0, 0, width, height);
-
-      const rightGlow = ctx.createRadialGradient(width, cy, 10, width, cy, width * 0.4);
-      rightGlow.addColorStop(0, 'rgba(255, 136, 0, 0.25)');
-      rightGlow.addColorStop(1, 'rgba(0,0,0,0)');
-      ctx.fillStyle = rightGlow;
-      ctx.fillRect(0, 0, width, height);
-
-      // Render floating dust spores
-      for (let p of particles) {
-        p.x += p.vx;
-        p.y += p.vy;
-
-        if (p.y < 0) p.y = height;
-        if (p.x < 0) p.x = width;
-        if (p.x > width) p.x = 0;
-
-        ctx.fillStyle = `rgba(255, 200, 100, ${p.alpha})`;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fill();
-      }
-
-      requestAnimationFrame(renderTunnelBackground);
-    }
-
-    // Spark / Victory Particle FX
-    function triggerSparks() {
-      for (let i = 0; i < 50; i++) {
-        sparkList.push({
-          x: width / 2,
-          y: height / 2,
-          vx: (Math.random() - 0.5) * 14,
-          vy: (Math.random() - 0.7) * 14,
-          size: Math.random() * 6 + 3,
-          color: ['#ffc83b', '#ff8800', '#38bdf8', '#4ade80'][Math.floor(Math.random() * 4)],
-          life: 1.0
-        });
-      }
-    }
-
-    function renderSparks() {
-      sCtx.clearRect(0, 0, width, height);
-
-      for (let i = sparkList.length - 1; i >= 0; i--) {
-        const s = sparkList[i];
-        s.x += s.vx;
-        s.y += s.vy;
-        s.vy += 0.3; // gravity
-        s.life -= 0.025;
-
-        if (s.life <= 0) {
-          sparkList.splice(i, 1);
-          continue;
+      function loadLevel() {
+        let catKey = currentMode;
+        if (currentMode === 'mixto') {
+          const keys = Object.keys(UNIT_CATEGORIES);
+          catKey = keys[Math.floor(Math.random() * keys.length)];
         }
 
-        sCtx.fillStyle = s.color;
-        sCtx.globalAlpha = s.life;
-        sCtx.beginPath();
-        sCtx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
-        sCtx.fill();
-        sCtx.globalAlpha = 1.0;
+        const catData = UNIT_CATEGORIES[catKey];
+        const units = catData.units;
+
+        let srcIdx, tgtIdx;
+        if (currentLevel <= 10) {
+          srcIdx = Math.floor(Math.random() * units.length);
+          const diff = (Math.random() < 0.5 ? 1 : -1) * (Math.random() < 0.5 ? 1 : 2);
+          tgtIdx = Math.max(0, Math.min(units.length - 1, srcIdx + diff));
+          if (srcIdx === tgtIdx) tgtIdx = srcIdx === 0 ? 1 : srcIdx - 1;
+        } else {
+          srcIdx = Math.floor(Math.random() * units.length);
+          do {
+            tgtIdx = Math.floor(Math.random() * units.length);
+          } while (srcIdx === tgtIdx);
+        }
+
+        const srcUnit = units[srcIdx];
+        const tgtUnit = units[tgtIdx];
+
+        let srcVal;
+        if (currentLevel <= 10) {
+          srcVal = [1, 2, 3, 4, 5, 6, 8, 10, 20, 50, 100][Math.floor(Math.random() * 11)];
+        } else if (currentLevel <= 20) {
+          srcVal = [0.5, 1.2, 2.5, 3.8, 4.5, 7.5, 12, 45, 150, 2500][Math.floor(Math.random() * 10)];
+        } else {
+          srcVal = [0.05, 0.008, 0.75, 1.25, 3.4, 14.8, 620, 45000][Math.floor(Math.random() * 8)];
+        }
+
+        const realVal = (srcVal * srcUnit.val) / tgtUnit.val;
+        const steps = Math.abs(srcIdx - tgtIdx);
+        const isMultiply = srcIdx < tgtIdx;
+
+        let wrong1 = isMultiply ? srcVal / Math.pow(10, steps) : srcVal * Math.pow(10, steps);
+        let wrong2 = isMultiply ? srcVal * Math.pow(10, steps > 1 ? steps - 1 : steps + 1) : srcVal / Math.pow(10, steps > 1 ? steps - 1 : steps + 1);
+
+        if (wrong1 === realVal) wrong1 = realVal * 10;
+        if (wrong2 === realVal || wrong2 === wrong1) wrong2 = realVal / 10;
+
+        const doorOptions = [realVal, wrong1, wrong2].sort(() => Math.random() - 0.5);
+
+        currentQuestion = {
+          category: catData.name,
+          srcVal,
+          srcUnit: srcUnit.code,
+          tgtUnit: tgtUnit.code,
+          correctVal: realVal,
+          doorOptions,
+          steps,
+          isMultiply,
+          factor: Math.pow(10, steps)
+        };
+
+        const lblLvl = document.getElementById('levelBadge');
+        const lblCat = document.getElementById('gameCategoryBadge');
+        const lblScore = document.getElementById('scoreCounter');
+        const lblStreak = document.getElementById('streakCounter');
+
+        if (lblLvl) lblLvl.innerText = `${currentLevel} / ${TOTAL_LEVELS}`;
+        if (lblCat) lblCat.innerText = catData.name;
+        if (lblScore) lblScore.innerText = score;
+        if (lblStreak) lblStreak.innerText = `🔥 x${streak}`;
+
+        const srcV = document.getElementById('sourceValue');
+        const srcU = document.getElementById('sourceUnit');
+        const tgtU = document.getElementById('targetUnit');
+        const prompt = document.getElementById('challengePrompt');
+
+        if (srcV) srcV.innerText = formatNum(srcVal);
+        if (srcU) srcU.innerText = srcUnit.code;
+        if (tgtU) tgtU.innerText = tgtUnit.code;
+        if (prompt) prompt.innerHTML = `Convierte <strong class="text-amber-300">${formatNum(srcVal)} ${srcUnit.code}</strong> a (<strong class="text-sky-300">${tgtUnit.code}</strong>)`;
+
+        doorOptions.forEach((opt, idx) => {
+          const txt = document.getElementById(`doorText${idx}`);
+          if (txt) txt.innerText = `${formatNum(opt)} ${tgtUnit.code}`;
+        });
+
+        const mascot = document.getElementById('mascotSpeech');
+        if (mascot) mascot.innerText = "Toca el pomo de la puerta con el resultado correcto";
       }
 
-      requestAnimationFrame(renderSparks);
-    }
+      function formatNum(n) {
+        if (n === undefined || n === null) return '0';
+        return n.toLocaleString('es-ES', { maximumFractionDigits: 6 });
+      }
 
-    window.onload = function() {
-      updateHighScoreDisplay();
-      renderTunnelBackground();
-      renderSparks();
-    };
+      window.chooseDoor = function(doorIdx) {
+        playSound('door');
+        totalAttempts++;
+
+        const chosenVal = currentQuestion.doorOptions[doorIdx];
+        const isCorrect = Math.abs(chosenVal - currentQuestion.correctVal) < 0.000001;
+
+        if (isCorrect) {
+          playSound('correct');
+          correctAttempts++;
+          streak++;
+          if (streak > maxStreak) maxStreak = streak;
+          score += 100 + (streak * 15);
+
+          if (typeof confetti === 'function') {
+            try { confetti({ particleCount: 40, spread: 50, origin: { y: 0.7 } }); } catch(e) {}
+          }
+
+          const mascot = document.getElementById('mascotSpeech');
+          if (mascot) mascot.innerText = "¡Excelente! ¡La puerta se abre de par en par!";
+
+          if (currentLevel >= TOTAL_LEVELS) {
+            setTimeout(showGameOverScreen, 500);
+          } else {
+            currentLevel++;
+            setTimeout(loadLevel, 450);
+          }
+        } else {
+          playSound('wrong');
+          streak = 0;
+          showExplanationModal(chosenVal);
+        }
+      };
+
+      function showExplanationModal(chosenVal) {
+        const q = currentQuestion;
+        const opText = q.isMultiply ? 'Multiplicar (×)' : 'Dividir (:)';
+        const dirText = q.isMultiply ? 'BAJAR ⬇️' : 'SUBIR ⬆️';
+
+        const expBody = document.getElementById('expBody');
+        if (expBody) {
+          expBody.innerHTML = `
+            <p class="font-bold text-amber-300">Explicación del fallo:</p>
+            <p>• De <b>${q.srcUnit}</b> a <b>${q.tgtUnit}</b> tienes que <strong class="text-yellow-300">${dirText}</strong> <b>${q.steps}</b> escalón(es).</p>
+            <p>• Operación: <strong class="text-yellow-300">${opText}</strong> por <b>${formatNum(q.factor)}</b>.</p>
+            <div class="mt-2 p-2 bg-amber-950/80 rounded-lg border border-amber-700/60 text-center font-mono text-amber-200">
+              ${formatNum(q.srcVal)} ${q.isMultiply ? '×' : '÷'} ${formatNum(q.factor)} = <strong class="text-yellow-300 text-sm">${formatNum(q.correctVal)} ${q.tgtUnit}</strong>
+            </div>
+          `;
+        }
+
+        const modal = document.getElementById('explanationModal');
+        if (modal) modal.classList.remove('hidden');
+      }
+
+      window.closeExplanationModal = function() {
+        const modal = document.getElementById('explanationModal');
+        if (modal) modal.classList.add('hidden');
+        if (currentLevel < TOTAL_LEVELS) {
+          currentLevel++;
+          loadLevel();
+        } else {
+          showGameOverScreen();
+        }
+      };
+
+      function showGameOverScreen() {
+        const game = document.getElementById('screenGame');
+        const over = document.getElementById('screenGameOver');
+
+        if (game) game.classList.add('hidden');
+        if (over) over.classList.remove('hidden');
+
+        const accuracy = totalAttempts > 0 ? Math.round((correctAttempts / totalAttempts) * 100) : 100;
+
+        const fScore = document.getElementById('finalScore');
+        const fStreak = document.getElementById('finalStreak');
+        const fAcc = document.getElementById('finalAccuracy');
+        const fMedal = document.getElementById('finalMedal');
+
+        if (fScore) fScore.innerText = score;
+        if (fStreak) fStreak.innerText = `🔥 x${maxStreak}`;
+        if (fAcc) fAcc.innerText = `${accuracy}%`;
+
+        let medal = '🥉 Explorador';
+        if (accuracy >= 90) medal = '🥇 Maestro Métrico';
+        else if (accuracy >= 75) medal = '🥈 Experto Métrico';
+
+        if (fMedal) fMedal.innerText = medal;
+
+        try {
+          const saved = parseInt(localStorage.getItem('tunel_highscore') || 0);
+          if (score > saved) {
+            localStorage.setItem('tunel_highscore', score);
+          }
+        } catch(e) {}
+
+        if (typeof confetti === 'function') {
+          try { confetti({ particleCount: 100, spread: 80, origin: { y: 0.5 } }); } catch(e) {}
+        }
+      }
+
+      window.restartCurrentGame = function() {
+        window.startGame(currentMode);
+      };
+
+      window.openStairsModal = function() {
+        playSound('door');
+        const modal = document.getElementById('stairsModal');
+        if (modal) modal.classList.remove('hidden');
+      };
+
+      window.closeStairsModal = function() {
+        const modal = document.getElementById('stairsModal');
+        if (modal) modal.classList.add('hidden');
+      };
+
+      window.addEventListener('keydown', (e) => {
+        const expModal = document.getElementById('explanationModal');
+        const stModal = document.getElementById('stairsModal');
+        const game = document.getElementById('screenGame');
+
+        if (expModal && !expModal.classList.contains('hidden')) {
+          if (e.key === 'Enter' || e.key === ' ') window.closeExplanationModal();
+          return;
+        }
+        if (stModal && !stModal.classList.contains('hidden')) {
+          if (e.key === 'Escape' || e.key === 'Enter') window.closeStairsModal();
+          return;
+        }
+
+        if (game && game.classList.contains('hidden')) return;
+
+        if (e.key === '1' || e.key === 'ArrowLeft') window.chooseDoor(0);
+        else if (e.key === '2' || e.key === 'ArrowUp') window.chooseDoor(1);
+        else if (e.key === '3' || e.key === 'ArrowRight') window.chooseDoor(2);
+      });
+    })();
   </script>
 </body>
 </html>
